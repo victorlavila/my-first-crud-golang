@@ -2,9 +2,10 @@ package controller
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/victorlavila/my-first-crud-golang/src/configuration/rest_err"
+	"github.com/victorlavila/my-first-crud-golang/src/configuration/validate"
 	"github.com/victorlavila/my-first-crud-golang/src/controller/model/request"
 )
 
@@ -13,12 +14,10 @@ func CreateUser(c *gin.Context) {
 	var userRequest request.UserRequest
 
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
-		restErr := rest_err.NewBadRequestError(
-			fmt.Sprintf(
-				"There are some incorrect fields, error=%s\n", err.Error(),
-			))
+		log.Printf("Error trying to marchal object, error=%s\n", err.Error())
+		errRest := validate.ValidateUserError(err)
 
-		c.JSON(restErr.Code, restErr)
+		c.JSON(errRest.Code, errRest)
 		return
 	}
 
